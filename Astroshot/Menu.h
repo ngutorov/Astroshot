@@ -8,9 +8,7 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-
 @interface Menu : SKNode
-
 
 @property (nonatomic) int score;
 @property (nonatomic) int topScore;
@@ -18,6 +16,5 @@
 
 -(void)hide;
 -(void)show;
-
 
 @end

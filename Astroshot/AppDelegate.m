@@ -15,7 +15,11 @@
 
 @implementation AppDelegate
 
+MyScene *startScene;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    application.statusBarHidden = YES;
     
     CGRect screenFrame = [UIScreen mainScreen].bounds;
     
@@ -24,9 +28,8 @@
     
     SKView *startView = [[SKView alloc] initWithFrame:screenFrame];
     startView.showsFPS = YES;
-    startView.showsNodeCount = YES;
     
-    SKScene *startScene = [[MyScene alloc] initWithSize:startView.bounds.size];
+    startScene = [[MyScene alloc] initWithSize:screenFrame.size];
     startScene.scaleMode = SKSceneScaleModeAspectFit;
     startScene.backgroundColor = [UIColor blackColor];
     
@@ -43,13 +46,7 @@
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    
-    SKView *view = (SKView*)self.window.rootViewController.view;
-    ((MyScene*)view.scene).gamePaused = YES;
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    
+    startScene.paused = YES;
 }
 
 @end

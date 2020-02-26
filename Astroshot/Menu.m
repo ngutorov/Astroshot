@@ -8,7 +8,6 @@
 
 #import "Menu.h"
 
-
 @implementation Menu {
     
     SKLabelNode *_scoreLabel;
@@ -26,7 +25,7 @@
     
     if (self) {
         _title = [SKSpriteNode spriteNodeWithImageNamed:@"Title"];
-        _title.position = CGPointMake(0, 63);
+        _title.position = CGPointMake(0, 23);
         [self addChild:_title];
         
         _scoreBoard = [SKSpriteNode spriteNodeWithImageNamed:@"ScoreBoard"];
@@ -59,9 +58,7 @@
     }
     
     return self;
-    
 }
-
 
 -(void)hide {
     
@@ -76,7 +73,6 @@
     }];
     
 }
-
 
 -(void)show {
     
@@ -104,20 +100,16 @@
     [_playButton runAction:animatePlayButton completion:^{
         self.touchable = YES;
     }];
-    
 }
-
 
 -(void)setScore:(int)score {
     _score = score;
     _scoreLabel.text = [[NSNumber numberWithInt:score] stringValue];
 }
 
-
 -(void)setTopScore:(int)topScore {
     _topScore = topScore;
     _topScoreLabel.text = [[NSNumber numberWithInt:topScore] stringValue];
 }
-
 
 @end

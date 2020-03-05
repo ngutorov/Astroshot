@@ -12,13 +12,13 @@
     
     SKLabelNode *_scoreLabel;
     SKLabelNode *_topScoreLabel;
+    SKLabelNode *_controlHintLabel;
+    
     SKSpriteNode *_title;
     SKSpriteNode *_scoreBoard;
     SKSpriteNode *_playButton;
     SKSpriteNode *_controlHint;
-    
 }
-
 
 - (id)init {
     self = [super init];
@@ -48,8 +48,28 @@
         [_scoreBoard addChild:_topScoreLabel];
         
         _controlHint = [SKSpriteNode spriteNodeWithImageNamed:@"ControlHint"];
-        _controlHint.position = CGPointMake(0, -300);
+        _controlHint.position = CGPointMake(0, -275);
         [self addChild:_controlHint];
+        
+        _controlHintLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
+        _controlHintLabel.fontSize = 18;
+        _controlHintLabel.position = CGPointMake(0, -300);
+        _controlHintLabel.text = @"ROTATE DEVICE TO CONTROL";
+        [_scoreBoard addChild:_controlHintLabel];
+        
+        // Create bounce action for play button.
+        SKAction *bouncePlayButton = [SKAction sequence:@[[SKAction resizeByWidth:-15 height:-5 duration:0.25],
+                                                          [SKAction resizeByWidth:15 height:5 duration:0.25]]];
+        
+        // Create rotation action for "motion control hint" sprite.
+        SKAction *rotateControlHint = [SKAction sequence:@[[SKAction rotateByAngle:M_PI/4 duration:1],
+                                                           [SKAction rotateByAngle:-M_PI/2 duration:1],
+                                                           [SKAction rotateByAngle:M_PI/4 duration:1]]];
+        
+        // Run rotation and bounce actions.
+        [_controlHint runAction:[SKAction repeatAction:rotateControlHint count:1] completion:^{
+            [self->_playButton runAction:[SKAction repeatActionForever:bouncePlayButton]];
+        }];
         
         self.score = 0;
         self.topScore = 0;

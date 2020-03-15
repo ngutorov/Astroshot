@@ -1,4 +1,4 @@
-# Astroshot 0.9.1
+# Astroshot 0.9
 
 **Earth's last hope is in your hands, take control of the space cannon and protect Earth from asteroids.**
 
@@ -9,5 +9,5 @@ Your goal will be quite challenging as you will have to save space capsules and 
 ![ScreenShot_01](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot01.PNG)
 ![ScreenShot_02](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot02.PNG)
 ![ScreenShot_03](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot03.PNG)
-![ScreenShot_03](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot04.PNG)
+![ScreenShot_04](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot04.PNG)
 

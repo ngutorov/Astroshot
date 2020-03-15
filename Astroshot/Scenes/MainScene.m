@@ -6,15 +6,15 @@
 //  Copyright © 2019 Nikolay Gutorov. All rights reserved.
 //
 
-#import "MyScene.h"
-#import "Menu.h"
+#import "MainScene.h"
+#import "MainMenu.h"
 #import "MotionManager.h"
 
-@implementation MyScene {
+@implementation MainScene {
     
     NSUserDefaults *_userDefaults;
     SKNode *_mainLayer;
-    Menu *_menu;
+    MainMenu *_menu;
     MotionManager *_motionManager;
     
     NSMutableArray *_shieldPool;
@@ -198,7 +198,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         _shieldUpSound = [SKAction playSoundFileNamed:@"ShieldUp.caf" waitForCompletion:NO];
         
         // Setup menu.
-        _menu = [[Menu alloc] init];
+        _menu = [[MainMenu alloc] init];
         _menu.position = CGPointMake(self.size.width * 0.5, self.size.height - 100);
         [self addChild:_menu];
         

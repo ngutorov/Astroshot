@@ -10,7 +10,7 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-@interface MyScene : SKScene <SKPhysicsContactDelegate>
+@interface MainScene : SKScene <SKPhysicsContactDelegate>
 
 @property (nonatomic) int ammo;
 @property (nonatomic) int score;

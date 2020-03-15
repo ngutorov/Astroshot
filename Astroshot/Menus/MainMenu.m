@@ -6,9 +6,9 @@
 //  Copyright © 2019 Nikolay Gutorov. All rights reserved.
 //
 
-#import "Menu.h"
+#import "MainMenu.h"
 
-@implementation Menu {
+@implementation MainMenu {
     
     SKLabelNode *_scoreLabel;
     SKLabelNode *_topScoreLabel;
@@ -25,7 +25,7 @@
     
     if (self) {
         _title = [SKSpriteNode spriteNodeWithImageNamed:@"Title"];
-        _title.position = CGPointMake(0, 23);
+        _title.position = CGPointMake(0, 48);
         [self addChild:_title];
         
         _scoreBoard = [SKSpriteNode spriteNodeWithImageNamed:@"ScoreBoard"];

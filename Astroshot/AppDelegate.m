@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "MyScene.h"
+#import "MainScene.h"
 
 @interface AppDelegate ()
 
@@ -15,7 +15,7 @@
 
 @implementation AppDelegate
 
-MyScene *startScene;
+MainScene *startScene;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -29,7 +29,7 @@ MyScene *startScene;
     SKView *startView = [[SKView alloc] initWithFrame:screenFrame];
     startView.showsFPS = YES;
     
-    startScene = [[MyScene alloc] initWithSize:screenFrame.size];
+    startScene = [[MainScene alloc] initWithSize:screenFrame.size];
     startScene.scaleMode = SKSceneScaleModeAspectFit;
     startScene.backgroundColor = [UIColor blackColor];
     

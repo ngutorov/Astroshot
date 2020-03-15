@@ -1,4 +1,4 @@
-# Astroshot
+# Astroshot 0.9.1
 
 **Earth's last hope is in your hands, take control of the space cannon and protect Earth from asteroids.**
 

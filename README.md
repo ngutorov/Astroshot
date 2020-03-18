@@ -11,3 +11,5 @@ Your goal will be quite challenging as you will have to save space capsules and 
 ![ScreenShot_03](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot03.PNG)
 ![ScreenShot_04](https://github.com/ngutorov/Astroshot/blob/master/Demo/ScreenShot04.PNG)
 
+**Copyright © 2019 Nikolay Gutorov. All rights reserved.**
+

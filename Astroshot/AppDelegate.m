@@ -27,7 +27,6 @@ MainScene *startScene;
     _viewController.view = [[UIView alloc] initWithFrame:screenFrame];
     
     SKView *startView = [[SKView alloc] initWithFrame:screenFrame];
-    startView.showsFPS = YES;
     
     startScene = [[MainScene alloc] initWithSize:screenFrame.size];
     startScene.scaleMode = SKSceneScaleModeAspectFit;

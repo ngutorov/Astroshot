@@ -9,6 +9,7 @@
 #import "MainScene.h"
 #import "MainMenu.h"
 #import "MotionManager.h"
+#import "CannonBall.h"
 
 @implementation MainScene {
     
@@ -183,10 +184,10 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         
         // Setup score display.
         _scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
-        _scoreLabel.position = CGPointMake(10, 12);
+        _scoreLabel.position = CGPointMake(20, self.size.height - 20);
         _scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
-        _scoreLabel.fontSize = 16;
-        _scoreLabel.fontColor = [UIColor colorWithRed:0.471 green:0.831 blue:0.992 alpha:1];
+        _scoreLabel.fontSize = 15;
+        _scoreLabel.fontColor = [UIColor grayColor];
         [self addChild:_scoreLabel];
         
         // Setup sounds.
@@ -483,7 +484,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         // Collision between halo and shield.
         [self addExplosion:firstBody.node.position withName:@"HaloExplosion"];
         [self runAction:_explosionSound];
-    
+        
         firstBody.categoryBitMask = 0;
         
         [firstBody.node removeFromParent];
@@ -581,8 +582,8 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 
 -(void)shoot {
     
-    // Create ball node.
-    SKSpriteNode *ball = [SKSpriteNode spriteNodeWithImageNamed:@"Ball"];
+    // Create cannon ball node.
+    CannonBall *ball = [CannonBall spriteNodeWithImageNamed:@"Ball"];
     ball.name = @"ball";
     CGVector rotaionVector = radiansToVector(_cannon.zRotation + M_PI/2);
     ball.position = CGPointMake(_cannon.position.x + (_cannon.size.width * 0.5 * rotaionVector.dx),
@@ -599,6 +600,13 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     ball.physicsBody.contactTestBitMask = kCCEdgesCategory | kCCShieldUpCategory;
     
     [self runAction:_laserSound];
+    
+    // Create cannon ball trail.
+    NSString *ballTrailPath = [[NSBundle mainBundle] pathForResource:@"CannonBallTrail" ofType:@"sks"];
+    SKEmitterNode *ballTrail = [NSKeyedUnarchiver unarchiveObjectWithFile:ballTrailPath];
+    ballTrail.targetNode = _mainLayer;
+    [_mainLayer addChild:ballTrail];
+    ball.trail = ballTrail;
 }
 
 -(void)didSimulatePhysics {
@@ -616,6 +624,10 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     
     // Remove unused nodes.
     [_mainLayer enumerateChildNodesWithName:@"ball" usingBlock:^(SKNode *node, BOOL *stop) {
+        
+        if ([node respondsToSelector:@selector(updateTrail)]) {
+            [node performSelector:@selector(updateTrail) withObject:nil afterDelay:0.0];
+        }
         
         if (!CGRectContainsPoint(self.frame, node.position)) {
             [node removeFromParent];

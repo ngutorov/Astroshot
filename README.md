@@ -1,8 +1,8 @@
-# Astroshot 0.9
+# Astroshot 0.9.1
 
 **Earth's last hope is in your hands, take control of the space cannon and protect Earth from asteroids.**
 
-Your goal will be quite challenging as you will have to save space capsules and be carefully with nukes.
+Your goal will be quite challenging as you will have to save space capsules and be careful with falling nukes.
 
 ## Have fun and enjoy the game! :smile:
 

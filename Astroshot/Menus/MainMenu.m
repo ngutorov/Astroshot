@@ -25,16 +25,16 @@
     
     if (self) {
         _title = [SKSpriteNode spriteNodeWithImageNamed:@"Title"];
-        _title.position = CGPointMake(0, 48);
+        _title.position = CGPointMake(0, 0);
         [self addChild:_title];
         
         _scoreBoard = [SKSpriteNode spriteNodeWithImageNamed:@"ScoreBoard"];
-        _scoreBoard.position = CGPointMake(0, -50);
+        _scoreBoard.position = CGPointMake(0, -90);
         [self addChild:_scoreBoard];
         
         _playButton = [SKSpriteNode spriteNodeWithImageNamed:@"PlayButton"];
         _playButton.name = @"Play";
-        _playButton.position = CGPointMake(0, -172);
+        _playButton.position = CGPointMake(0, -200);
         [self addChild:_playButton];
         
         _scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
@@ -48,18 +48,18 @@
         [_scoreBoard addChild:_topScoreLabel];
         
         _controlHint = [SKSpriteNode spriteNodeWithImageNamed:@"ControlHint"];
-        _controlHint.position = CGPointMake(0, -275);
+        _controlHint.position = CGPointMake(0, -315);
         [self addChild:_controlHint];
         
         _controlHintLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
         _controlHintLabel.fontSize = 18;
-        _controlHintLabel.position = CGPointMake(0, -300);
+        _controlHintLabel.position = CGPointMake(0, -340);
         _controlHintLabel.text = @"ROTATE DEVICE TO CONTROL";
         [_scoreBoard addChild:_controlHintLabel];
         
         // Create bounce action for play button.
-        SKAction *bouncePlayButton = [SKAction sequence:@[[SKAction resizeByWidth:-15 height:-5 duration:0.25],
-                                                          [SKAction resizeByWidth:15 height:5 duration:0.25]]];
+        SKAction *bouncePlayButton = [SKAction sequence:@[[SKAction resizeByWidth:-30 height:-10 duration:0.35],
+                                                          [SKAction resizeByWidth:30 height:10 duration:0.35]]];
         
         // Create rotation action for "motion control hint" sprite.
         SKAction *rotateControlHint = [SKAction sequence:@[[SKAction rotateByAngle:M_PI/4 duration:1],

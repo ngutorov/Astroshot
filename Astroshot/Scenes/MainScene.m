@@ -13,11 +13,13 @@
 
 @implementation MainScene {
     
+//MARK: - Internal Properties
+    
     NSUserDefaults *_userDefaults;
-    SKNode *_mainLayer;
-    MainMenu *_menu;
     MotionManager *_motionManager;
     
+    SKNode *_mainLayer;
+    MainMenu *_menu;
     NSMutableArray *_shieldPool;
     
     int _killCount;
@@ -43,11 +45,13 @@
     SKAction *_bounceSound;
     SKAction *_deepExplosionSound;
     SKAction *_explosionSound;
-    SKAction *_laserSound;
+    SKAction *_shotSound;
+    SKAction *_shotEmptySound;
     SKAction *_zapSound;
     SKAction *_shieldUpSound;
-    
 }
+
+// MARK: - Constants
 
 static const CGFloat SHOOT_SPEED = 1000.0f;
 static const CGFloat kCCHaloLowAngle = 200.0 * M_PI / 180.0;
@@ -64,6 +68,8 @@ static const uint32_t kCCShieldUpCategory = 0x1 << 6;
 
 static NSString * const kCCKeyTopScore = @"TopScore";
 
+// MARK: - Computed properties
+
 static inline CGVector radiansToVector(CGFloat radians) {
     CGVector vector;
     vector.dx = cosf(radians);
@@ -76,8 +82,13 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     return value * (high - low) +low;
 }
 
+// MARK: - didMoveToView
 
-// MARK: Init
+- (void)didMoveToView:(SKView *)view {
+
+}
+
+// MARK: - Init
 
 -(id)initWithSize:(CGSize)size {    
     if (self = [super initWithSize:size]) {
@@ -160,11 +171,11 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         _shieldPool = [[NSMutableArray alloc] init];
         
         // Setup shields.
-        for (int i=0; i< 7; i++) {
+        for (int i=0; i < 8; i++) {
             SKSpriteNode *shield = [SKSpriteNode spriteNodeWithImageNamed:@"Block"];
             shield.size = CGSizeMake(50, 15);
             shield.name = @"shield";
-            shield.position = CGPointMake(31 + (52 * i), 150);
+            shield.position = CGPointMake(25 + (52 * i), 150);
             shield.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:CGSizeMake(50, 15)];
             shield.physicsBody.categoryBitMask = kCCShieldCategory;
             shield.physicsBody.collisionBitMask = 0;
@@ -184,17 +195,18 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         
         // Setup score display.
         _scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
-        _scoreLabel.position = CGPointMake(20, self.size.height - 20);
+        _scoreLabel.position = CGPointMake(18, self.size.height - 28);
         _scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
         _scoreLabel.fontSize = 15;
-        _scoreLabel.fontColor = [UIColor grayColor];
+        _scoreLabel.fontColor = [UIColor colorWithRed:0.471 green:0.831 blue:0.992 alpha:1];
         [self addChild:_scoreLabel];
         
         // Setup sounds.
         _bounceSound = [SKAction playSoundFileNamed:@"Bounce.caf" waitForCompletion:NO];
         _deepExplosionSound = [SKAction playSoundFileNamed:@"DeepExplosion.caf" waitForCompletion:NO];
         _explosionSound = [SKAction playSoundFileNamed:@"Explosion.caf" waitForCompletion:NO];
-        _laserSound = [SKAction playSoundFileNamed:@"Laser.caf" waitForCompletion:NO];
+        _shotSound = [SKAction playSoundFileNamed:@"Shot.caf" waitForCompletion:NO];
+        _shotEmptySound = [SKAction playSoundFileNamed:@"ShotEmpty.caf" waitForCompletion:NO];
         _zapSound = [SKAction playSoundFileNamed:@"Zap.caf" waitForCompletion:NO];
         _shieldUpSound = [SKAction playSoundFileNamed:@"ShieldUp.caf" waitForCompletion:NO];
         
@@ -217,14 +229,13 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         
         // If message that player is not suppose to shoot space capsules shown.
         _friendLabelShown = NO;
-        
     }
     
     return self;
 }
 
 
-// MARK: GameAdmin
+// MARK: - Game Admin
 
 -(void)newGame {
     
@@ -271,7 +282,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }
 }
 
--(void) gameOver {
+-(void)gameOver {
     
     [_mainLayer enumerateChildNodesWithName:@"halo" usingBlock:^(SKNode *node, BOOL *stop) {
         [self addExplosion:node.position withName:@"HaloExplosion"];
@@ -306,10 +317,9 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }];
 }
 
+// MARK: - Spawn
 
-// MARK: Spawn
-
--(void) spawnHalo {
+-(void)spawnHalo {
     
     // Increase halo speed.
     SKAction *spawnHaloAction = [self actionForKey:@"SpawnHalo"];
@@ -391,7 +401,6 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }
     
     [_mainLayer addChild:halo];
-    
 }
 
 -(void)spawnShieldPowerUp {
@@ -415,7 +424,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 }
 
 
-// MARK: Collisions
+// MARK: - Collisions
 
 -(void)didBeginContact:(SKPhysicsContact *)contact {
     
@@ -528,7 +537,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 }
 
 
-// MARK: Touch Events
+// MARK: - Touch Events
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
@@ -578,7 +587,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 }
 
 
-// MARK: Touch Action (Shooting)
+// MARK: - Touch Action (Shooting)
 
 -(void)shoot {
     
@@ -599,7 +608,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     ball.physicsBody.collisionBitMask = kCCEdgesCategory;
     ball.physicsBody.contactTestBitMask = kCCEdgesCategory | kCCShieldUpCategory;
     
-    [self runAction:_laserSound];
+    [self runAction:_shotSound];
     
     // Create cannon ball trail.
     NSString *ballTrailPath = [[NSBundle mainBundle] pathForResource:@"CannonBallTrail" ofType:@"sks"];
@@ -620,6 +629,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
             [self shoot];
         }
         _didShoot = NO;
+        [self runAction:_shotEmptySound];
     }
     
     // Remove unused nodes.
@@ -649,7 +659,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 }
 
 
-// MARK: Helpers
+// MARK: - Helpers
 
 -(void)setAmmo:(int)ammo {
     

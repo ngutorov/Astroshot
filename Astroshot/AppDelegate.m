@@ -7,15 +7,11 @@
 //
 
 #import "AppDelegate.h"
-#import "MainScene.h"
-
-@interface AppDelegate ()
-
-@end
+#import "GameViewController.h"
 
 @implementation AppDelegate
 
-MainScene *startScene;
+GameViewController *viewController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -23,21 +19,14 @@ MainScene *startScene;
     
     CGRect screenFrame = [UIScreen mainScreen].bounds;
     
-    UIViewController *_viewController = [[UIViewController alloc] init];
-    _viewController.view = [[UIView alloc] initWithFrame:screenFrame];
+    // Main game ViewController.
+    viewController = [[GameViewController alloc] init];
+    viewController.view.frame = screenFrame;
     
-    SKView *startView = [[SKView alloc] initWithFrame:screenFrame];
-    
-    startScene = [[MainScene alloc] initWithSize:screenFrame.size];
-    startScene.scaleMode = SKSceneScaleModeAspectFit;
-    startScene.backgroundColor = [UIColor blackColor];
-    
-    [_viewController.view addSubview:startView];
-    [startView presentScene:startScene];
-    
-    self.window = [[UIWindow alloc] initWithFrame:screenFrame];
+    // Main game UIWindow.
+    self.window = [[UIWindow alloc] initWithFrame: screenFrame];
     self.window.backgroundColor = [UIColor blackColor];
-    self.window.rootViewController = _viewController;
+    self.window.rootViewController = viewController;
     
     [self.window makeKeyAndVisible];
     
@@ -45,7 +34,8 @@ MainScene *startScene;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    startScene.paused = YES;
+    // Pause the game for inactive mode.
+    viewController.startScene.paused = YES;
 }
 
 @end

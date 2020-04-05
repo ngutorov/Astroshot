@@ -173,9 +173,9 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         // Setup shields.
         for (int i=0; i < 8; i++) {
             SKSpriteNode *shield = [SKSpriteNode spriteNodeWithImageNamed:@"Block"];
-            shield.size = CGSizeMake(50, 15);
+            shield.size = CGSizeMake(50, 22);
             shield.name = @"shield";
-            shield.position = CGPointMake(25 + (52 * i), 150);
+            shield.position = CGPointMake(25 + (52 * i), 170);
             shield.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:CGSizeMake(50, 15)];
             shield.physicsBody.categoryBitMask = kCCShieldCategory;
             shield.physicsBody.collisionBitMask = 0;
@@ -251,7 +251,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         
         // Setup life bar.
         SKSpriteNode *lifeBar = [SKSpriteNode spriteNodeWithImageNamed:@"BlueBar"];
-        lifeBar.position = CGPointMake(self.size.width * 0.5, 128);
+        lifeBar.position = CGPointMake(self.size.width * 0.5, 140);
         lifeBar.size = CGSizeMake(self.size.width, 18);
         lifeBar.physicsBody = [SKPhysicsBody bodyWithEdgeFromPoint:CGPointMake(-lifeBar.size.width * 0.5, 0) toPoint:CGPointMake(lifeBar.size.width * 0.5, 0)];
         lifeBar.physicsBody.categoryBitMask = kCCLifeBarCategory;

@@ -23,6 +23,7 @@
     
     [self.view addSubview:startView];
     [self setNeedsUpdateOfHomeIndicatorAutoHidden];
+    
     [startView presentScene:_startScene];
 }
 

@@ -234,7 +234,6 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     return self;
 }
 
-
 // MARK: - Game Admin
 
 -(void)newGame {
@@ -282,6 +281,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }
 }
 
+// Game over.
 -(void)gameOver {
     
     [_mainLayer enumerateChildNodesWithName:@"halo" usingBlock:^(SKNode *node, BOOL *stop) {
@@ -423,7 +423,6 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }
 }
 
-
 // MARK: - Collisions
 
 -(void)didBeginContact:(SKPhysicsContact *)contact {
@@ -536,7 +535,6 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }
 }
 
-
 // MARK: - Touch Events
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -585,7 +583,6 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         }
     }
 }
-
 
 // MARK: - Touch Action (Shooting)
 
@@ -657,7 +654,6 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         }
     }];
 }
-
 
 // MARK: - Helpers
 

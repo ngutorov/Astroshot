@@ -74,14 +74,12 @@
         self.score = 0;
         self.topScore = 0;
         self.touchable = YES;
-        
     }
     
     return self;
 }
 
 -(void)hide {
-    
     self.touchable = NO;
     
     SKAction *animateMenu = [SKAction scaleTo:0.0 duration:0.5];
@@ -91,11 +89,9 @@
         self.xScale = 1.0;
         self.yScale = 1.0;
     }];
-    
 }
 
 -(void)show {
-    
     self.hidden = NO;
     self.touchable = NO;
     

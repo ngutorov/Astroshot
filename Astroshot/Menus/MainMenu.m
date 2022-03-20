@@ -25,7 +25,7 @@
     
     if (self) {
         _title = [SKSpriteNode spriteNodeWithImageNamed:@"Title"];
-        _title.position = CGPointMake(0, 0);
+        _title.position = CGPointMake(0, 25);
         [self addChild:_title];
         
         _scoreBoard = [SKSpriteNode spriteNodeWithImageNamed:@"ScoreBoard"];
@@ -37,23 +37,13 @@
         _playButton.position = CGPointMake(0, -200);
         [self addChild:_playButton];
         
-        _scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
-        _scoreLabel.fontSize = 30;
-        _scoreLabel.position = CGPointMake(-52, -23);
-        [_scoreBoard addChild:_scoreLabel];
-        
-        _topScoreLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
-        _topScoreLabel.fontSize = 30;
-        _topScoreLabel.position = CGPointMake(48, -23);
-        [_scoreBoard addChild:_topScoreLabel];
-        
         _controlHint = [SKSpriteNode spriteNodeWithImageNamed:@"ControlHint"];
         _controlHint.position = CGPointMake(0, -315);
         [self addChild:_controlHint];
         
         _controlHintLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
-        _controlHintLabel.fontSize = 18;
-        _controlHintLabel.position = CGPointMake(0, -340);
+        _controlHintLabel.fontSize = 15;
+        _controlHintLabel.position = CGPointMake(0, -325);
         _controlHintLabel.text = @"ROTATE DEVICE TO CONTROL";
         [_scoreBoard addChild:_controlHintLabel];
         
@@ -82,7 +72,7 @@
 -(void)hide {
     self.touchable = NO;
     
-    SKAction *animateMenu = [SKAction scaleTo:0.0 duration:0.5];
+    SKAction *animateMenu = [SKAction scaleTo:0.0 duration:0.25];
     animateMenu.timingMode = SKActionTimingEaseIn;
     [self runAction:animateMenu completion:^{
         self.hidden = YES;
@@ -119,13 +109,39 @@
 }
 
 -(void)setScore:(int)score {
+    [_scoreBoard removeChildrenInArray:[[NSArray alloc] initWithObjects:_scoreLabel, nil]];
     _score = score;
-    _scoreLabel.text = [[NSNumber numberWithInt:score] stringValue];
+    _scoreLabel = [self makeDropShadowString:[[NSNumber numberWithInt:score] stringValue]
+                                    position:CGPointMake(-70, -23)];
+    [_scoreBoard addChild:_scoreLabel];
 }
 
 -(void)setTopScore:(int)topScore {
+    [_scoreBoard removeChildrenInArray:[[NSArray alloc] initWithObjects:_topScoreLabel, nil]];
     _topScore = topScore;
-    _topScoreLabel.text = [[NSNumber numberWithInt:topScore] stringValue];
+    _topScoreLabel = [self makeDropShadowString:[[NSNumber numberWithInt:topScore] stringValue]
+                                       position:CGPointMake(65, -23)];
+    [_scoreBoard addChild:_topScoreLabel];
+}
+
+// MARK: - Helpers
+
+- (SKLabelNode *) makeDropShadowString:(NSString *) text
+                              position: (CGPoint) position {
+    
+    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:text
+                                                                           attributes:@{
+        NSFontAttributeName : [UIFont fontWithName:@"Helvetica-Bold" size:28],
+        NSStrokeWidthAttributeName: @-6.0,
+        NSStrokeColorAttributeName:[UIColor colorWithRed: 235/255.0 green: 38/255.0 blue: 39/255.0 alpha:1.000],
+        NSForegroundColorAttributeName:[UIColor whiteColor]
+    }];
+    
+    SKLabelNode *dropShadow = [SKLabelNode labelNodeWithFontNamed:@"Helvetica-Bold"];
+    dropShadow.attributedText = attributedString;
+    dropShadow.position = position;
+    
+    return dropShadow;
 }
 
 @end

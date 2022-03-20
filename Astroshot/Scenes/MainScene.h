@@ -9,11 +9,14 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #import <SpriteKit/SpriteKit.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 @interface MainScene : SKScene <SKPhysicsContactDelegate>
 
 @property (nonatomic) int ammo;
 @property (nonatomic) int score;
 @property (nonatomic) BOOL gamePaused;
+
+-(void)setGamePaused:(BOOL)gamePaused;
 
 @end

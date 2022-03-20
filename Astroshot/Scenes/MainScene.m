@@ -13,7 +13,7 @@
 
 @implementation MainScene {
     
-//MARK: - Internal Properties
+    //MARK: - Internal Properties
     
     NSUserDefaults *_userDefaults;
     MotionManager *_motionManager;
@@ -22,6 +22,7 @@
     MainMenu *_menu;
     NSMutableArray *_shieldPool;
     
+    NSNumber *_ammoIncrementDelay;
     int _killCount;
     
     BOOL _didShoot;
@@ -84,16 +85,14 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 
 // MARK: - didMoveToView
 
-- (void)didMoveToView:(SKView *)view {
-
-}
+- (void)didMoveToView:(SKView *)view {}
 
 // MARK: - Init
 
--(id)initWithSize:(CGSize)size {    
+-(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
         
-        // Set up motion manager.
+        // Setup motion manager.
         _motionManager = MotionManager.sharedManager;
         _motionManager.manager = [[CMMotionManager alloc] init];
         _motionManager.queue = [[NSOperationQueue alloc] init];
@@ -152,22 +151,18 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
                                                             [SKAction performSelector:@selector(spawnShieldPowerUp) onTarget:self]]];
         [self runAction: [SKAction repeatActionForever:spawnShieldPowerUp]];
         
-        // Setup Ammo.
+        // Setup ammo.
         _ammoDisplay = [SKSpriteNode spriteNodeWithImageNamed:@"Ammo5"];
         _ammoDisplay.anchorPoint = CGPointMake(0.5, 0.0);
         _ammoDisplay.position = _cannon.position;
         [self addChild:_ammoDisplay];
         self.ammo = 5;
         
-        SKAction *incrementAmmo = [SKAction sequence:@[[SKAction waitForDuration:1.5],
-                                                       [SKAction runBlock:^{
-            self.ammo++;
-            
-        }]]];
+        // Delay represents how often ammo is reloading.
+        _ammoIncrementDelay = [NSNumber numberWithFloat:1.5];
+        [self runAmmoIncrementionTimer];
         
-        [self runAction:[SKAction repeatActionForever:incrementAmmo]];
-        
-        // Setup shield pool
+        // Setup shield pool.
         _shieldPool = [[NSMutableArray alloc] init];
         
         // Setup shields.
@@ -175,7 +170,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
             SKSpriteNode *shield = [SKSpriteNode spriteNodeWithImageNamed:@"Block"];
             shield.size = CGSizeMake(50, 22);
             shield.name = @"shield";
-            shield.position = CGPointMake(25 + (52 * i), 170);
+            shield.position = CGPointMake(25 + (52 * i), 190);
             shield.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:CGSizeMake(50, 15)];
             shield.physicsBody.categoryBitMask = kCCShieldCategory;
             shield.physicsBody.collisionBitMask = 0;
@@ -185,20 +180,20 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         
         // Setup pause button.
         _pauseButton = [SKSpriteNode spriteNodeWithImageNamed:@"PauseButton"];
-        _pauseButton.position = CGPointMake(self.size.width - 30, 35);
+        _pauseButton.position = CGPointMake(self.size.width - 35, 35);
         [self addChild:_pauseButton];
         
         //Setup resume button.
         _resumeButton = [SKSpriteNode spriteNodeWithImageNamed:@"ResumeButton"];
-        _resumeButton.position = CGPointMake(self.size.width * 0.5, self.size.height * 0.5);
+        _resumeButton.position = CGPointMake(self.size.width * 0.5, self.size.height * 0.5 + 100);
         [self addChild:_resumeButton];
         
         // Setup score display.
         _scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
-        _scoreLabel.position = CGPointMake(18, self.size.height - 28);
+        _scoreLabel.position = CGPointMake(25, self.size.height - 35);
         _scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
-        _scoreLabel.fontSize = 15;
-        _scoreLabel.fontColor = [UIColor colorWithRed:0.471 green:0.831 blue:0.992 alpha:1];
+        _scoreLabel.fontSize = 18;
+        _scoreLabel.fontColor = [UIColor whiteColor];
         [self addChild:_scoreLabel];
         
         // Setup sounds.
@@ -237,20 +232,19 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 // MARK: - Game Admin
 
 -(void)newGame {
-    
     [_mainLayer removeAllChildren];
     
-    // Add all shields from pool to scene.
-    while (_shieldPool.count > 0){
+    // Add all shields from the pool to scene.
+    while (_shieldPool.count > 0) {
         [_mainLayer addChild:[_shieldPool objectAtIndex:0]];
         [_shieldPool removeObjectAtIndex:0];
     }
     
-    if (_shieldPool.count == 0){
+    if (_shieldPool.count == 0) {
         
         // Setup life bar.
         SKSpriteNode *lifeBar = [SKSpriteNode spriteNodeWithImageNamed:@"BlueBar"];
-        lifeBar.position = CGPointMake(self.size.width * 0.5, 140);
+        lifeBar.position = CGPointMake(self.size.width * 0.5, 175);
         lifeBar.size = CGSizeMake(self.size.width, 18);
         lifeBar.physicsBody = [SKPhysicsBody bodyWithEdgeFromPoint:CGPointMake(-lifeBar.size.width * 0.5, 0) toPoint:CGPointMake(lifeBar.size.width * 0.5, 0)];
         lifeBar.physicsBody.categoryBitMask = kCCLifeBarCategory;
@@ -266,18 +260,24 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         _gameOver = NO;
         _killCount = 0;
         
-        // Start motion detection
+        // Start motion detection.
         [_motionManager startDeviceMitionForObject:_cannon];
     }
 }
 
-// Pause game.
+// Pause the game.
 -(void)setGamePaused:(BOOL)gamePaused {
-    if (!_gameOver){
+    if (!_gameOver) {
         _gamePaused = gamePaused;
         _pauseButton.hidden = gamePaused;
         _resumeButton.hidden = !gamePaused;
         self.paused = gamePaused;
+        
+        if (gamePaused) {
+            [_motionManager stopDeviceMotion];
+        } else {
+            [_motionManager startDeviceMitionForObject:_cannon];
+        }
     }
 }
 
@@ -323,8 +323,9 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     
     // Increase halo speed.
     SKAction *spawnHaloAction = [self actionForKey:@"SpawnHalo"];
-    if (spawnHaloAction.speed < 2.5) {
-        spawnHaloAction.speed += 0.025;
+    if ((spawnHaloAction.speed < 2.5) && (!_gameOver)) {
+        spawnHaloAction.speed += 0.05;
+        [self decreaseAmmoIncrementDelay];
     }
     
     // Create halo node.
@@ -349,7 +350,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         }
     }
     
-    if (haloCount == 4) {
+    if (haloCount % 25 == 0) {
         
         // Create a Nuke.
         halo.texture = [SKTexture textureWithImageNamed:@"Nuke"];
@@ -366,7 +367,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         halo.physicsBody.angularVelocity = M_PI_2;
         [halo.userData setValue:@YES forKey:@"Nuke"];
         
-    } else if (arc4random_uniform(6) == 0) {
+    } else if (arc4random_uniform(10) == 0) {
         
         // Create a friend (capsule).
         halo.texture = [SKTexture textureWithImageNamed:@"Capsule"];
@@ -387,14 +388,14 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         capsuleSmokeTrail.targetNode = _mainLayer;
         [halo addChild:capsuleSmokeTrail];
         
-        // Let player know that he's not suppose to shoot space capsules.
+        // Inform the player not to shoot space capsules.
         if (!_gameOver && !_friendLabelShown) {
             _friendLabel = [SKLabelNode labelNodeWithFontNamed:@"DIN Alternate"];
             _friendLabel.text = @"Don't shoot space capsules!";
             _friendLabel.position = CGPointMake(self.view.frame.size.width/2, self.frame.size.height/2);
             _friendLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeCenter;
-            _friendLabel.fontSize = 18;
-            _friendLabel.fontColor = [UIColor colorWithRed:0.471 green:0.831 blue:0.992 alpha:1];
+            _friendLabel.fontSize = 20;
+            _friendLabel.fontColor = [UIColor whiteColor];
             [self addChild:_friendLabel];
             _friendLabelShown = YES;
         }
@@ -403,6 +404,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     [_mainLayer addChild:halo];
 }
 
+// Spawning defense shield fragments.
 -(void)spawnShieldPowerUp {
     
     if (_shieldPool.count > 0) {
@@ -410,7 +412,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         SKSpriteNode *shieldUp = [SKSpriteNode spriteNodeWithImageNamed:@"Block"];
         shieldUp.name = @"shieldUp";
         shieldUp.position = CGPointMake(self.size.width + shieldUp.size.width, randomInRange(150, self.size.height - 100));
-        shieldUp.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:CGSizeMake(42, 9)];
+        shieldUp.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:CGSizeMake(50, 12)];
         shieldUp.physicsBody.categoryBitMask = kCCShieldUpCategory;
         shieldUp.physicsBody.collisionBitMask = 0;
         shieldUp.physicsBody.velocity = CGVectorMake(-100, randomInRange(-40, 40));
@@ -449,6 +451,12 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         
         // Collision between nuke and ball.
         if ([[firstBody.node.userData valueForKey:@"Nuke"] boolValue]) {
+            
+            int i;
+            for(i=0;i<5;i++)
+            {
+                AudioServicesPlaySystemSound (1352);
+            }
             
             [self addExplosion:firstBody.node.position withName:@"MassExplosion"];
             
@@ -529,7 +537,7 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         [secondBody.node removeFromParent];
     }
     
-    // Remove message that player is not suppose to shoot space capsules.
+    // Remove warning not to shoot space capsules.
     if (_friendLabelShown) {
         [_friendLabel removeFromParent];
     }
@@ -571,11 +579,13 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
         {
             if (self.gamePaused){
                 if ([_resumeButton containsPoint:[touch locationInNode:_resumeButton.parent]]) {
+                    self.paused = NO;
                     self.gamePaused = NO;
                     [_motionManager startDeviceMitionForObject:_cannon];
                 }
             } else{
                 if ([_pauseButton containsPoint:[touch locationInNode:_pauseButton.parent]]) {
+                    self.paused = YES;
                     self.gamePaused = YES;
                     [_motionManager stopDeviceMotion];
                 }
@@ -617,16 +627,21 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
 
 -(void)didSimulatePhysics {
     
-    // Shoot.
+    // Shoot with vibration or play empty shot sounds if there is no ammo.
     if (_didShoot) {
+        
+        if (self.ammo == 0) {
+            [self runAction:_shotEmptySound];
+        }
         
         if (self.ammo > 0) {
             self.ammo--;
             
+            // Force strong vibration.
+            AudioServicesPlaySystemSound (1352);
             [self shoot];
         }
         _didShoot = NO;
-        [self runAction:_shotEmptySound];
     }
     
     // Remove unused nodes.
@@ -655,6 +670,21 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     }];
 }
 
+// Make explosion effect.
+-(void)addExplosion:(CGPoint)position withName:(NSString*)name {
+    
+    NSString *explosionPath = [[NSBundle mainBundle] pathForResource:name ofType:@"sks"];
+    SKEmitterNode *explosion = [NSKeyedUnarchiver unarchiveObjectWithFile:explosionPath];
+    
+    explosion.position = position;
+    [_mainLayer addChild:explosion];
+    
+    SKAction *removeExplosion = [SKAction sequence:@[[SKAction waitForDuration:2],
+                                                     [SKAction removeFromParent]]];
+    
+    [explosion runAction:removeExplosion];
+}
+
 // MARK: - Helpers
 
 -(void)setAmmo:(int)ammo {
@@ -670,18 +700,28 @@ static inline CGFloat randomInRange(CGFloat low, CGFloat high) {
     _scoreLabel.text = [NSString stringWithFormat:@"Score: %d", score];
 }
 
--(void)addExplosion:(CGPoint)position withName:(NSString*)name {
-    
-    NSString *explosionPath = [[NSBundle mainBundle] pathForResource:name ofType:@"sks"];
-    SKEmitterNode *explosion = [NSKeyedUnarchiver unarchiveObjectWithFile:explosionPath];
-    
-    explosion.position = position;
-    [_mainLayer addChild:explosion];
-    
-    SKAction *removeExplosion = [SKAction sequence:@[[SKAction waitForDuration:2],
-                                                     [SKAction removeFromParent]]];
-    
-    [explosion runAction:removeExplosion];
+// Decrease ammo increment delay:
+
+-(void)decreaseAmmoIncrementDelay {
+    float oldIncrement = [_ammoIncrementDelay floatValue];
+    if (oldIncrement > 0.75) {
+        _ammoIncrementDelay = [NSNumber numberWithFloat:oldIncrement -= 0.001];
+    }
+}
+
+- (void) runAmmoIncrementionTimer {
+    [NSTimer scheduledTimerWithTimeInterval:[_ammoIncrementDelay floatValue]
+                                     target:self
+                                   selector:@selector(incrementAmmoInvalidateTimer:)
+                                   userInfo:nil
+                                    repeats:NO];
+}
+
+- (void) incrementAmmoInvalidateTimer:(NSTimer*)timer {
+    self.ammo++;
+    [self decreaseAmmoIncrementDelay];
+    [timer invalidate];
+    [self runAmmoIncrementionTimer];
 }
 
 @end

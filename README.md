@@ -9,10 +9,10 @@ You'll also have to deal with falling space capsules and nuclear bombs. Shooting
 > **Have fun and enjoy the game!**
 
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/31618374/159149873-ef77bd79-d3b3-4430-b322-9420f985e3c8.png" width="23%" height="23%">
-  <img src="https://user-images.githubusercontent.com/31618374/159149969-0db9d03f-7496-46fc-bd10-13a3dd84ac82.png" width="23%" height="23%">
-  <img src="https://user-images.githubusercontent.com/31618374/159149784-f9b31cd1-36b9-4789-a161-9f1bfe3ef4b9.gif" width="28%" height="28%">
-  <img src="https://user-images.githubusercontent.com/31618374/159151162-f17893b6-a0d8-4a9a-b962-6d1de3589352.PNG" width="23%" height="23%">
+  <img src="https://user-images.githubusercontent.com/31618374/159153770-6f1ad3e9-2ad1-4546-86bc-cb0008b0fb9f.jpg" width="23%" height="23%">
+  <img src="https://user-images.githubusercontent.com/31618374/159153773-83486206-d538-435a-aba6-3dbb3faa0ef0.jpg" width="23%" height="23%">
+  <img src="https://user-images.githubusercontent.com/31618374/159153795-c0440a58-37d4-492b-9233-19575639e090.gif" width="28%" height="28%">
+  <img src="https://user-images.githubusercontent.com/31618374/159153780-49ede267-86db-46a5-a961-09aba938b11c.jpg" width="23%" height="23%">
 </p>
 
 **Copyright © 2015 Nikolay Gutorov. All rights reserved.**
